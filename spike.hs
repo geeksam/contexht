@@ -30,25 +30,21 @@ specResults spec = specBar spec ++
                    "\n\n" ++ (specResultsIndented "" spec) ++
                    "\n" ++ (specStatsDisplay spec)
 
+indentChildren               :: String -> (String -> Spec -> String) -> [Spec] -> String
+indentChildren indent f specs = concat $ map (f (indent ++ "  ")) specs
+
+
 specPendingIndented                            :: String -> Spec -> String
 specPendingIndented indent (It desc _)          = indent ++ "? " ++ desc ++ " (PENDING)\n"
-specPendingIndented indent (Pending desc specs) = indent ++ "? " ++ desc ++ "\n" ++ childResults
-  where
-    childResults = concat $ map (specPendingIndented (indent ++ "  ")) specs
-specPendingIndented indent (Context desc specs) = indent ++ "  " ++ desc ++ "\n" ++ childResults
-  where
-    childResults = concat $ map (specPendingIndented (indent ++ "  ")) specs
+specPendingIndented indent (Pending desc specs) = indent ++ "? " ++ desc ++ "\n" ++ (indentChildren indent specPendingIndented specs)
+specPendingIndented indent (Context desc specs) = indent ++ "  " ++ desc ++ "\n" ++ (indentChildren indent specPendingIndented specs)
 
 
 specResultsIndented                            :: String -> Spec -> String
 specResultsIndented indent (It desc PASS)       = indent ++ "+ " ++ desc ++ " PASS\n"
 specResultsIndented indent (It desc (FAIL msg)) = indent ++ "! " ++ desc ++ " (FAIL: " ++ msg ++ ")\n"
-specResultsIndented indent (Pending desc specs) = indent ++ "? " ++ desc ++ "\n" ++ childResults
-  where
-    childResults = concat $ map (specPendingIndented (indent ++ "  ")) specs
-specResultsIndented indent (Context desc specs) = indent ++ "  " ++ desc ++ "\n" ++ childResults
-  where
-    childResults = concat $ map (specResultsIndented (indent ++ "  ")) specs
+specResultsIndented indent (Pending desc specs) = indent ++ "? " ++ desc ++ "\n" ++ (indentChildren indent specPendingIndented specs)
+specResultsIndented indent (Context desc specs) = indent ++ "  " ++ desc ++ "\n" ++ (indentChildren indent specResultsIndented specs)
 
 
 specStatsDisplay     :: Spec -> String

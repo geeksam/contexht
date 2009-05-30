@@ -1,6 +1,6 @@
 x runner
 - assertion helpers
 - syntax munging
-- pending
+x pending
 - dependent specs (relates to pending)
 - 
