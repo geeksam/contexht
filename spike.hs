@@ -5,7 +5,7 @@ type SpecDescription = String
 data Spec = It SpecDescription SpecResult
           | Context SpecDescription [Spec]
           | Pending SpecDescription [Spec]
-          -- | DependentContext String SpecAssertion [Spec] -- "Dependent" because [Spec] may not run if SpecAssertion fails
+          -- | DependentContext String SpecResult [Spec] -- "Dependent" because [Spec] may not run if SpecResult fails
           deriving (Show)
 
 data SpecResult = PASS
@@ -15,14 +15,23 @@ data SpecResult = PASS
 specs = Context "A Thingy" [
           Context "with a doohickey" [
             Context "and a frobnitz" [
-              It "should do something" (if False then PASS else FAIL "but it didn't"),
+              It "should do something" $ assert (True == False) "but it didn't",
+                                      -- ==> if False then PASS else FAIL "but it didn't"
               It "should do another thing" PASS
             ],
             Pending "This hasn't been done yet" [
               It "should prove P=NP" undefined
             ]
+            -- DependentContext "if this works" (FAIL) [
+            --   It "should solve the halting problem" undefined
+            -- ]
           ]
         ]
+
+
+assert          :: Bool -> String -> SpecResult
+assert True  msg = PASS
+assert False msg = FAIL msg
 
 
 specResults     :: Spec -> String
@@ -66,8 +75,8 @@ countPendingSpec (Pending _ specs) = countPendingList specs
 
 
 specStats                  :: Spec -> SpecStat
-specStats (It _ PASS)       = (0, 1, 0)
-specStats (It _ (FAIL _))   = (1, 0, 0)
+specStats (It _ PASS)       = (1, 0, 0)
+specStats (It _ (FAIL _))   = (0, 1, 0)
 specStats (Pending _ specs) = (0, 0, countPendingList specs)
 specStats (Context _ specs) = foldl1 addStat $ map specStats specs
   where
