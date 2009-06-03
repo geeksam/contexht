@@ -1,4 +1,5 @@
 x runner
+- multiple asserts per It (note: difficult)
 - assertion helpers
 - syntax munging
 x pending

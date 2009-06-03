@@ -1,16 +1,6 @@
 #!/usr/bin/env runhaskell
 
-type SpecDescription = String
-
-data Spec = It SpecDescription SpecResult
-          | Context SpecDescription [Spec]
-          | Pending SpecDescription [Spec]
-          -- | DependentContext String SpecResult [Spec] -- "Dependent" because [Spec] may not run if SpecResult fails
-          deriving (Show)
-
-data SpecResult = PASS
-                | FAIL SpecDescription
-                deriving (Show)
+import Contexht
 
 specs = Context "A Thingy" [
           Context "with a doohickey" [
@@ -27,11 +17,6 @@ specs = Context "A Thingy" [
             -- ]
           ]
         ]
-
-
-assert          :: Bool -> String -> SpecResult
-assert True  msg = PASS
-assert False msg = FAIL msg
 
 
 specResults     :: Spec -> String
@@ -56,33 +41,6 @@ specResultsIndented indent (Pending desc specs) = indent ++ "? " ++ desc ++ "\n"
 specResultsIndented indent (Context desc specs) = indent ++ "  " ++ desc ++ "\n" ++ (indentChildren indent specResultsIndented specs)
 
 
-specStatsDisplay     :: Spec -> String
-specStatsDisplay spec = (show numSpecs) ++ " specs run.  " ++
-                        (show numPass)  ++ " passed, " ++
-                        (show numPend)  ++ " pending, " ++
-                        (show numFail)  ++ " failed."
-  where
-    numSpecs                    = numPass + numFail + numPend
-    (numPass, numFail, numPend) = specStats spec
-
-
-type SpecStat = (Int, Int, Int) -- (number passes, number fails, number pending)
-
-countPendingList specs             = sum (map countPendingSpec specs)
-countPendingSpec (It _ _)          = 1
-countPendingSpec (Context _ specs) = countPendingList specs
-countPendingSpec (Pending _ specs) = countPendingList specs
-
-
-specStats                  :: Spec -> SpecStat
-specStats (It _ PASS)       = (1, 0, 0)
-specStats (It _ (FAIL _))   = (0, 1, 0)
-specStats (Pending _ specs) = (0, 0, countPendingList specs)
-specStats (Context _ specs) = foldl1 addStat $ map specStats specs
-  where
-    addStat (a1, b1, c1) (a2, b2, c2) = (a1+a2, b1+b2, c1+c2)
-
-
 specBar :: Spec -> String
 specBar (It desc PASS)       = "."
 specBar (It desc (FAIL msg)) = "X"
@@ -91,5 +49,5 @@ specBar (Context desc specs) = childResults
   where
     childResults = concat (map specBar specs)
 
-runSpecs = putStrLn . specResults
-main = runSpecs specs
+runSpecs = putStrLn . Main.specResults
+main = Main.runSpecs specs
