@@ -57,6 +57,16 @@ specStatsDisplay spec = (specOrSpecs numSpecs) ++ " run.  " ++
     specOrSpecs n = (show n) ++ " specs"
 
 
+-- Red/green bar display
+specBar                     :: Spec -> String
+specBar (It desc PASS)       = "."
+specBar (It desc FAIL)       = "X"
+specBar (Pending desc specs) = take (countPendingList specs) (repeat '?')
+specBar (Context desc specs) = childResults
+  where
+    childResults = concat (map specBar specs)
+
+
 -- Packaging all the various displays together...
 specResults     :: Spec -> String
 specResults spec = "\n" ++ (specStatsDisplay spec)

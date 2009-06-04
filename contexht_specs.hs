@@ -28,7 +28,13 @@ specs =
       It  "should display a message for one pending spec" $ 
           assertEqual "1 spec run.  0 passed, 1 pending, 0 failed." (specStatsDisplay pending_context),
       It  "should display a message for one failing spec" $ 
-          assertEqual "1 spec run.  0 passed, 0 pending, 1 failed." (specStatsDisplay context_with_one_failing_spec) "baz"
+          assertEqual "1 spec run.  0 passed, 0 pending, 1 failed." (specStatsDisplay context_with_one_failing_spec)
+    ],
+    
+    let threeSpecs = Context "three specs" [context_with_one_passing_spec, context_with_one_failing_spec, pending_context] in
+    Context ".specBar" [
+      It  "should print a dot, an X, and a question mark" $
+          assertEqual ".X?" (specBar threeSpecs)
     ]
   ]
 
