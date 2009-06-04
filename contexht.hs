@@ -8,8 +8,7 @@ data Spec = It SpecDescription SpecResult
           -- | DependentContext String SpecResult [Spec] -- "Dependent" because [Spec] may not run if SpecResult fails
           deriving (Show)
 
-data SpecResult = PASS
-                | FAIL String
+data SpecResult = PASS | FAIL
                 deriving (Eq, Show)
 
 type NumPASS = Int
@@ -19,18 +18,18 @@ type SpecStat = (NumPASS, NumFAIL, NumPEND)
 
 
 -- Assertions
-assert          :: Bool -> String -> SpecResult
-assert True  msg = PASS
-assert False msg = FAIL msg
+assert      :: Bool -> SpecResult
+assert True  = PASS
+assert False = FAIL
 
-assertEqual :: (Eq a) => a -> a -> String -> SpecResult
-assertEqual x y msg = assert (x == y) msg
+assertEqual    :: (Eq a) => a -> a -> SpecResult
+assertEqual x y = assert (x == y)
 
 
 -- Basic stat collection
 specStats                  :: Spec -> SpecStat
 specStats (It _ PASS)       = (1, 0, 0)
-specStats (It _ (FAIL _))   = (0, 1, 0)
+specStats (It _ FAIL)       = (0, 1, 0)
 specStats (Pending _ specs) = (0, 0, countPendingList specs)
 specStats (Context _ specs) = foldl1 addStat $ map specStats specs
   where

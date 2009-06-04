@@ -15,7 +15,7 @@ context_with_one_passing_spec =
   ]
 context_with_one_failing_spec =
   Context "a context" [
-    It "should do some stuff" (FAIL "but it doesn't")
+    It "should do some stuff" FAIL
   ]
 pending_context =
   Pending "This hasn't been done yet" [
@@ -33,14 +33,14 @@ tests =
 
     "assert" ~:
     test [
-      "truth"   ~: (Contexht.assert True  "oh yes" ) ~?= PASS
-    , "falsity" ~: (Contexht.assert False "but no!") ~?= FAIL "but no!"
+      "truth"   ~: Contexht.assert True  ~?= PASS
+    , "falsity" ~: Contexht.assert False ~?= FAIL
     ],
 
     "assertEqual" ~:
     test [
-      "truth"   ~: (Contexht.assertEqual (2+2) 4 "oh yes" ) ~?= PASS
-    , "falsity" ~: (Contexht.assertEqual (2+2) 5 "for extremely large values of 2") ~?= FAIL "for extremely large values of 2"
+      "truth"   ~: Contexht.assertEqual (2+2) 4 ~?= PASS
+    , "falsity" ~: Contexht.assertEqual (2+2) 5 ~?= FAIL
     ]
   ]
 

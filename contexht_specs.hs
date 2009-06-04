@@ -8,7 +8,7 @@ context_with_one_passing_spec =
   ]
 context_with_one_failing_spec = 
   Context "a context" [
-    It "should do some stuff" (FAIL "but it doesn't")
+    It "should do some stuff" FAIL
   ]
 pending_context = 
   Pending "This hasn't been done yet" [
@@ -17,16 +17,16 @@ pending_context =
 context_with_one_pass_one_fail = 
   Context "a context" [
     It "should do some stuff" PASS,
-    It "should do some other stuff" (FAIL "but no!")
+    It "should do some other stuff" FAIL
   ]
 
 specs = 
   Context "Contexht" [
     Context ".specStatsDisplay" [
       It  "should display a message for one passing spec" $ 
-          assertEqual "1 spec run.  1 passed, 0 pending, 0 failed." (specStatsDisplay context_with_one_passing_spec) "foo",
+          assertEqual "1 spec run.  1 passed, 0 pending, 0 failed." (specStatsDisplay context_with_one_passing_spec),
       It  "should display a message for one pending spec" $ 
-          assertEqual "1 spec run.  0 passed, 1 pending, 0 failed." (specStatsDisplay pending_context) "bar",
+          assertEqual "1 spec run.  0 passed, 1 pending, 0 failed." (specStatsDisplay pending_context),
       It  "should display a message for one failing spec" $ 
           assertEqual "1 spec run.  0 passed, 0 pending, 1 failed." (specStatsDisplay context_with_one_failing_spec) "baz"
     ]
