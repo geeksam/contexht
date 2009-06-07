@@ -1,6 +1,6 @@
 x runner
 - multiple asserts per It (note: difficult)
-- assertion helpers
+x assertion helpers
 - syntax munging
 x pending
 - dependent specs (relates to pending)
