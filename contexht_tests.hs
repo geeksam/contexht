@@ -17,10 +17,7 @@ context_with_one_failing_spec =
   Context "a context" [
     It "should do some stuff" FAIL
   ]
-pending_context =
-  Pending "This hasn't been done yet" [
-    It "should prove P=NP" undefined
-  ]
+pending_spec = ItEventually "should prove P=NP" undefined
 
 tests =
   test [
@@ -28,7 +25,7 @@ tests =
     test [
       "One passing" ~: (specStats context_with_one_passing_spec) ~?= (1, 0, 0)
     , "One failing" ~: (specStats context_with_one_failing_spec) ~?= (0, 1, 0)
-    , "One pending" ~: (specStats pending_context)               ~?= (0, 0, 1)
+    , "One pending" ~: (specStats pending_spec)                  ~?= (0, 0, 1)
     ],
 
     "assert" ~:

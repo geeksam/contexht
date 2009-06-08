@@ -10,16 +10,13 @@ specs =
                                 -- ==> if False then PASS else FAIL "but it didn't"
         It "should do another thing" PASS
       ],
-      Pending "This hasn't been done yet" [
-        It "should prove P=NP" undefined-- ,
-        --         Context "some other junk" [
-        --           It "foo" undefined,
-        --           It "bar" undefined
-        --         ]
+      Context "This hasn't been done yet" [
+        ItEventually "should prove P=NP" FAIL,
+        Context "some other junk" [
+          It "nope" FAIL,
+          It "yup" PASS
+        ]
       ]
-      -- DependentContext "if this works" (FAIL) [
-      --   It "should solve the halting problem" undefined
-      -- ]
     ]
   ]
 

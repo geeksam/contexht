@@ -1,7 +1,7 @@
 x runner
-- multiple asserts per It (note: difficult)
 x assertion helpers
-- syntax munging
 x pending
-- dependent specs (relates to pending)
-- 
+- multiple assertions per It? (note: difficult to do in a readable way)
+- syntax munging ()
+- testing in monads, especially IO
+- dependent contexts:  only run enclosed tests if a given assertion passes (haven't added this because I haven't needed it in a Haskell project yet)

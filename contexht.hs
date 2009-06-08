@@ -1,15 +1,22 @@
+{-
+  Contexht:  A very small Behavio[u]r-Driven Development library for Haskell.
+  Written by Sam Livingston-Gray and Jesse Wolfe.
+
+  Design goals:  simplicity and readability.
+
+  We test because the things we work on are difficult to understand.  The tools we
+  use to test should help us manage *that* complexity, not add more of their own.
+-}
+
 module Contexht where
   
-type SpecDescription = String
-
-data Spec = Context SpecDescription [Spec]
-          | Pending SpecDescription [Spec]
-          | It SpecDescription SpecResult
-          -- | DependentContext String SpecResult [Spec] -- "Dependent" because [Spec] may not run if SpecResult fails
+data Spec = Context      SpecDescription [Spec]
+          | It           SpecDescription SpecResult
+          | ItEventually SpecDescription SpecResult
           deriving (Show)
 
-data SpecResult = PASS | FAIL
-                deriving (Eq, Show)
+type SpecDescription = String
+data SpecResult = PASS | FAIL deriving (Eq, Show)
 
 type NumPASS = Int
 type NumFAIL = Int
@@ -29,18 +36,12 @@ assertEqual x y = assert (x == y)
 -- Basic stat collection
 specStats                  :: Spec -> SpecStat
 specStats (Context _ specs) = foldl1 addSpecStat $ map specStats specs
-specStats (Pending _ specs) = (0, 0, countPendingList specs)
-specStats (It _ FAIL)       = (0, 1, 0)
-specStats (It _ PASS)       = (1, 0, 0)
+specStats (ItEventually _ _) = (0, 0, 1)
+specStats (It _ FAIL)        = (0, 1, 0)
+specStats (It _ PASS)        = (1, 0, 0)
 
+addSpecStat :: SpecStat -> SpecStat -> SpecStat
 addSpecStat (a1, b1, c1) (a2, b2, c2) = (a1+a2, b1+b2, c1+c2)
-
-
--- Stat collection for Pending contexts:  every It nested under a Pending should be counted as a pending spec
-countPendingList specs             = sum (map countPendingSpec specs)
-countPendingSpec (Context _ specs) = countPendingList specs
-countPendingSpec (Pending _ specs) = countPendingList specs
-countPendingSpec (It _ _)          = 1
 
 
 -- Stat summary display
@@ -60,27 +61,20 @@ specStatsDisplay spec = (specOrSpecs numSpecs) ++ " run.  " ++
 -- Red/green bar display
 specBar                     :: Spec -> String
 specBar (Context desc specs) = concat (map specBar specs)
-specBar (Pending desc specs) = take (countPendingList specs) (repeat '?')
-specBar (It desc PASS)       = "."
-specBar (It desc FAIL)       = "X"
+specBar (ItEventually desc _) = "?"
+specBar (It desc PASS)        = "."
+specBar (It desc FAIL)        = "X"
 
 
 -- Spec checklist display, with prefix to call out failing specs
 specChecklist n (Context desc specs)    = specLineContext n desc specs
-specChecklist n (Pending desc specs)    = specLinePending n desc specs
-specChecklist n (It desc PASS)          = specLineIt      n desc ""
-specChecklist n (It desc FAIL)          = specLineIt      n desc "FAIL"
+specChecklist n (It desc PASS)          = specLineIt n desc ""
+specChecklist n (It desc FAIL)          = specLineIt n desc "FAIL"
+specChecklist n (ItEventually desc _)   = specLineIt n desc "PEND"
                                        
-pendingChecklist n (Context desc specs) = specLineContext n desc specs
-pendingChecklist n (Pending desc specs) = specLinePending n desc specs
-pendingChecklist n (It desc _)          = specLineIt      n desc "PEND"
-
-specLineContext n text specs = (prefix n) ++ text ++ (indentSublist n specChecklist specs)    where prefix n = cr ++ tab (n+1)
-specLinePending n text specs = (prefix n) ++ text ++ (indentSublist n pendingChecklist specs) where prefix n = cr ++ tab (n+1)
-specLineIt      n text alert = (prefix n) ++ text
-  where
-    prefix n = cr ++ (overlay alert $ tab (n+1)) ++ 
-                     (overlay "-"   $ tab 1)
+specLineContext n text specs = cr ++ tab (n+1) ++ text ++ (indentSublist n specChecklist specs)
+specLineIt      n text alert = cr ++ (overlay alert $ tab (n+1)) ++ 
+                                     (overlay "-"   $ tab 1)     ++ text
 
 
 -- display helpers
@@ -101,7 +95,7 @@ specResults spec = cr ++ specBar spec ++
                    cr ++ (specStatsDisplay spec)
 
 
--- ...and running the above
+-- ...and running them
 runSpecs = putStrLn
          . specResults
 
