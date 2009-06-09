@@ -1,0 +1,106 @@
+h1. Contexht:  A very small Behavio[u]r-Driven Development library for Haskell.
+
+Written by "Sam Livingston-Gray":http://github.com/geeksam/, with many thanks to "Jesse Wolfe":http://github.com/jes5199/ for pairing on the initial spike (and any future contributions he decides to make).
+
+h2. Pronunciation
+
+"CON-teksht."  Basically, pretend you're Sean Connery saying the word "Context."  There's an "H" in it, you see, for Haskell, and I thought that was more fun than calling it "HContext".
+
+h2. Origin Story
+
+In spring 2009, I (that is, Sam) took a class in "Functional Languages":https://projects.cecs.pdx.edu/~mpj/funlangs/ from "Mark Jones":http://web.cecs.pdx.edu/~mpj/ and "Tim Sheard":http://web.cecs.pdx.edu/~sheard/ at "Portland State University":http://www.pdx.edu/.  (I'd meant to take it while I was an undergrad, but it was only offered once a year, and always conflicted with something critical I had to take in order to graduate on time.)
+
+The first homework assignment or two went by without the need to write any sort of automated tests, but the third one was a bit more complicated, and I decided it was time to check out HUnit.  I started using it on the fourth assignment, and while I did get it to work, it wasn't a great experience.  I had trouble getting it installed (I'm new to Haskell, and still don't know what package managers exist for it).  Then, once I did get it installed, I had to change the import statement depending on whether I wanted to use Hugs or GHC.  As for actually writing tests, I spent a good long while trying to decipher some very strange error messages... and the "convenient" syntax is, um, unattractive.
+
+Basically, I wanted "RSpec":http://rspec.info/ (minus the Object monkeypatching).  Or "Shoulda":http://www.thoughtbot.com/projects/shoulda/.  Or even "Context":http://github.com/jeremymcanally/context/tree/master/.
+
+So, for my final project, I decided to write the testing library I wished I'd had when I started.  (No, I'm not going for the extra credit by writing the TimeTravel monad to deliver it to my earlier self.)
+
+Amusingly, when I started writing HUnit tests to bootstrap Contexht, I spent some more time deciphering strange error messages before I got the syntax right.  This provided further encouragement to continue.
+
+h2. Design Opinions
+
+h3. Simplicity
+
+We test because the things we work on are difficult to understand.  Our testing tools shouldn't add more complexity.
+
+*PLEASE NOTE:  Contexht only tests pure functions.*  (_As a Haskell n00b, I still don't really grok monads, so I'd probably just make a hash of it.  If I come back to Haskell, or if Jesse gets the bug to work on this again, maybe we'll change that.  But don't count on us -- it's on GitHub.  If you like it, fork it!)_
+
+h3. Readability
+
+RSpec's "@foo.should == 42@" is definitely too far, but the use of contexts, suggestive keywords, and the natural layout that falls out of its block-based approach makes for very expressive tests.  Which helps with...
+
+h3. Tests = Documentation
+
+Description strings are required parameters, and they get reused to build the verbose output (which, as of this writing, is the only output option).
+
+h3. Recursivity
+
+Tests for Contexht are written in Contexht.  (I did write a few initial tests in HUnit to bootstrap Contexht; I'm leaving them here as a sanity check.)
+
+h2. Usage
+
+h3. Sample File
+
+<pre><code>
+  #!/usr/bin/env runhaskell
+
+  import Contexht
+
+  specs =
+    Context "A Thingy" [
+      Context "with a doohickey" [
+        Context "and a dingleberry" [
+          It "should believe six impossible things before breakfast" $ assert (True == False),
+          It "should twiddle the frobnitz" PASS
+        ],
+        Context "with no dingleberry anywhere in sight" [
+          ItEventually "should prove P=NP" FAIL,
+          Context "some other junk" [
+            It "nope" FAIL,
+            It "yup" PASS
+          ]
+        ]
+      ]
+    ]
+
+  main = runSpecs specs
+</code></pre>
+
+h3. Sample output
+
+<pre><code>  
+  X.?X.
+
+        A Thingy
+          with a doohickey
+            and a dingleberry
+  FAIL        - should believe six impossible things before breakfast
+              - should twiddle the frobnitz
+            with no dingleberry anywhere in sight
+  PEND        - should prove P=NP
+              some other junk
+  FAIL          - nope
+                - yup
+
+  5 specs run.  2 passed, 1 pending, 2 failed.
+</code></pre>
+
+The first thing you see is the progress bar, which prints "." for each passing test, "X" for each failing test, and "?" for each pending (or "ItEventually") test.  (You can use pending tests to comment out a test you're not sure about, or as markers for things to come back and fill in later.)
+
+Then comes the verbose output.  The structure of this output exactly mirrors the structure of the tests that created it.  Failing and pending tests are indicated in the left margin; passing tests are printed without comment.
+
+Last but not least, you get a convenient summary.
+
+h2. TODO
+
+As mentioned above, this doesn't test monads, which limits its utility.  Adding support for this would also make before/after (aka setup/teardown) functions desirable.
+
+And, assertEquals should probably tell you what the expected and actual values are in case of failure -- although this would require its arguments to be members of both the Eq and Show classes, which is not always possible.  So, uh, maybe that's a feature, too!
+
+h2. Feedback
+
+I'm primarily expecting feedback in the form of a grade from Mark and Tim.  But, if you run across this library and find it useful, feel free to drop me a line at geeksam (at) gmail (dot) com.
+
+Cheers!
+-Sam

@@ -1,7 +1,9 @@
 x runner
 x assertion helpers
+  - More helpful output on failed assertEqual calls
 x pending
 - multiple assertions per It? (note: difficult to do in a readable way)
 - syntax munging ()
 - testing in monads, especially IO
+  - before/after helpers (aka setup/teardown)
 - dependent contexts:  only run enclosed tests if a given assertion passes (haven't added this because I haven't needed it in a Haskell project yet)

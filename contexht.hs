@@ -1,12 +1,6 @@
-{-
-  Contexht:  A very small Behavio[u]r-Driven Development library for Haskell.
-  Written by Sam Livingston-Gray and Jesse Wolfe.
-
-  Design goals:  simplicity and readability.
-
-  We test because the things we work on are difficult to understand.  The tools we
-  use to test should help us manage *that* complexity, not add more of their own.
--}
+-- Contexht:  A very small Behavio[u]r-Driven Development library for Haskell.
+-- Written by Sam Livingston-Gray and Jesse Wolfe.
+-- For more information, see README.textile.
 
 module Contexht where
   
@@ -51,26 +45,26 @@ specStatsDisplay spec = (specOrSpecs numSpecs) ++ " run.  " ++
                         (show numPend)         ++ " pending, " ++
                         (show numFail)         ++ " failed."
   where
-    numSpecs                    = numPass + numFail + numPend
     (numPass, numFail, numPend) = specStats spec
-    specOrSpecs :: Int -> String
+    numSpecs = numPass + numFail + numPend
+    specOrSpecs  :: Int -> String
     specOrSpecs 1 = "1 spec"
     specOrSpecs n = (show n) ++ " specs"
 
 
 -- Red/green bar display
-specBar                     :: Spec -> String
-specBar (Context desc specs) = concat (map specBar specs)
-specBar (ItEventually desc _) = "?"
+specBar                      :: Spec -> String
+specBar (Context desc specs)  = concat (map specBar specs)
 specBar (It desc PASS)        = "."
 specBar (It desc FAIL)        = "X"
+specBar (ItEventually desc _) = "?"
 
 
 -- Spec checklist display, with prefix to call out failing specs
-specChecklist n (Context desc specs)    = specLineContext n desc specs
-specChecklist n (It desc PASS)          = specLineIt n desc ""
-specChecklist n (It desc FAIL)          = specLineIt n desc "FAIL"
-specChecklist n (ItEventually desc _)   = specLineIt n desc "PEND"
+specChecklist n (Context desc specs)  = specLineContext n desc specs
+specChecklist n (It desc PASS)        = specLineIt n desc ""
+specChecklist n (It desc FAIL)        = specLineIt n desc "FAIL"
+specChecklist n (ItEventually desc _) = specLineIt n desc "PEND"
                                        
 specLineContext n text specs = cr ++ tab (n+1) ++ text ++ (indentSublist n specChecklist specs)
 specLineIt      n text alert = cr ++ (overlay alert $ tab (n+1)) ++ 
@@ -79,7 +73,7 @@ specLineIt      n text alert = cr ++ (overlay alert $ tab (n+1)) ++
 
 -- display helpers
 cr = "\n"
-tab n = take (n * tabSize) $ repeat ' '       where tabSize = 2
+tab n = take (n * tabSize) $ repeat ' ' where tabSize = 2
 
 indentSublist n checklist specs = concat $ map (checklist (n+1)) specs
 
@@ -98,5 +92,3 @@ specResults spec = cr ++ specBar spec ++
 -- ...and running them
 runSpecs = putStrLn
          . specResults
-
-
