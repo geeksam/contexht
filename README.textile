@@ -4,7 +4,7 @@ Written by "Sam Livingston-Gray":http://github.com/geeksam/, with many thanks to
 
 h2. Pronunciation
 
-"CON-teksht."  Basically, pretend you're Sean Connery saying the word "Context."  There's an "H" in it, you see, for Haskell, and I thought that was more fun than calling it "HContext".
+"CON-teksht."  Basically, pretend you're Sean Connery saying the word "Context."  There's an "H" in it, you see, for Haskell, and I thought that was more fun than calling it "HContext".  (Though now you have to watch out if you're using an editor with naive autocompletion:  "Contexht" is the name of the library, "Context" is one of the constructors.)
 
 h2. Origin Story
 
@@ -28,7 +28,7 @@ We test because the things we work on are difficult to understand.  Our testing 
 
 h3. Readability
 
-RSpec's "@foo.should == 42@" is definitely too far, but the use of contexts, suggestive keywords, and the natural layout that falls out of its block-based approach makes for very expressive tests.  Which helps with...
+RSpec's @foo.should == 42@ is definitely too far, but the use of contexts, suggestive keywords, and the natural layout that falls out of its block-based approach makes for very expressive tests.  Which helps with...
 
 h3. Tests = Documentation
 
