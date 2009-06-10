@@ -4,7 +4,7 @@ Written by "Sam Livingston-Gray":http://github.com/geeksam/, with many thanks to
 
 h2. Pronunciation
 
-"CON-teksht."  Basically, pretend you're Sean Connery saying the word "Context."  There's an "H" in it, you see, for Haskell, and I thought that was more fun than calling it "HContext".  (Though now you have to watch out if you're using an editor with naive autocompletion:  "Contexht" is the name of the library, "Context" is one of the constructors.)
+"CON-teksht."  Basically, pretend you're Sean Connery saying the word "Context."  There's an "H" in it, you see, for Haskell, and I thought that was more fun than calling it "HContext".  (Though it does mean you have to watch out if you're using an editor with naive autocompletion:  "Contexht" is the name of the library, "Context" is one of the constructors.)
 
 h2. Origin Story
 
@@ -94,9 +94,9 @@ Last but not least, you get a convenient summary.
 
 h2. TODO
 
-As mentioned above, this doesn't test monads, which limits its utility.  Adding support for this would also make before/after (aka setup/teardown) functions desirable.
-
-And, assertEquals should probably tell you what the expected and actual values are in case of failure -- although this would require its arguments to be members of both the Eq and Show classes, which is not always possible.  So, uh, maybe that's a feature, too!
+* As mentioned above, this doesn't test monads, which limits its utility.  Adding support for this would also make before/after (aka setup/teardown) functions desirable.
+* I'm not sure whether multiple assertions per It would be a good thing; they'd certainly add some complexity to the framework and might make the tests harder to read... so I'm leaving that out.
+* It might also be interesting to add a DependentContext type to the Spec datatype, which would mark all contained specs as pending if a top-level assertion failed.  (In RSpec, I've sometimes put a "pending" function call inside the before helper of a context, which has a similar effect.)  I'll add this if I ever feel its lack.
 
 h2. Feedback
 

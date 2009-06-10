@@ -28,15 +28,24 @@ specs =
 
     let mathFAIL = FAILWithMessage "^^^^ Expected x == y where\n       x = 4\n       y = 5\n" in
     Context ".assertEqual" [
-      It  "should pass if its two arguments are equal" $
+      It  "should pass if its arguments are equal" $
           assert (PASS == (assertEqual (2+2) 4)),
-      It  "should fail if its two arguments are not equal (testing with assert)" $
+      It  "should fail with a message if its arguments are not equal (testing with assert)" $
           assert (mathFAIL == (assertEqual (2+2) 5)), -- for extremely large values of 2
-      It  "should fail if its two arguments are not equal (testing with itself)" $
+      It  "should fail with a message if its arguments are not equal (testing with itself)" $
           assertEqual mathFAIL (assertEqual (2+2) 5)
     ],
 
-    -- It "sanity check for assertEqual" $ assertEqual 4 5,  -- uncomment this to preview display of assertEqual failures
+    -- It "sanity check for assertEqual" $ assertEqual 4 5,  -- uncomment this to preview display of failure messages
+
+    Context ".assertEqualNoShow" [
+      It  "should pass if its arguments are equal" $
+          assert (PASS == (assertEqualNoShow (2+2) 4)),
+      It  "should fail if its arguments are not equal (testing with assert)" $
+          assert (FAIL == (assertEqualNoShow (2+2) 5)), -- for extremely large values of 2
+      It  "should fail if its arguments are not equal (testing with itself)" $
+          assertEqualNoShow FAIL (assertEqualNoShow (2+2) 5)
+    ],
 
     Context ".specStats" [
       It "should count a passing spec" $ assertEqual (1, 0, 0) (specStats context_with_one_passing_spec),
