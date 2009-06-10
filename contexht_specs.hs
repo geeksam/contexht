@@ -26,10 +26,17 @@ specs =
       It "should return FAIL if its argument is false" (if (FAIL == (assert False)) then PASS else FAIL)
     ],
 
+    let mathFAIL = FAILWithMessage "^^^^ Expected x == y where\n       x = 4\n       y = 5\n" in
     Context ".assertEqual" [
-      It "should pass if its two arguments are equal"     $ assert (PASS == (assertEqual (2+2) 4)),
-      It "should fail if its two arguments are not equal" $ assert (FAIL == (assertEqual (2+2) 5)) -- for extremely large values of 2
+      It  "should pass if its two arguments are equal" $
+          assert (PASS == (assertEqual (2+2) 4)),
+      It  "should fail if its two arguments are not equal (testing with assert)" $
+          assert (mathFAIL == (assertEqual (2+2) 5)), -- for extremely large values of 2
+      It  "should fail if its two arguments are not equal (testing with itself)" $
+          assertEqual mathFAIL (assertEqual (2+2) 5)
     ],
+
+    -- It "sanity check for assertEqual" $ assertEqual 4 5,  -- uncomment this to preview display of assertEqual failures
 
     Context ".specStats" [
       It "should count a passing spec" $ assertEqual (1, 0, 0) (specStats context_with_one_passing_spec),
